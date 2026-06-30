@@ -1,7 +1,8 @@
-import prisma from '../config/prisma.js';
+import prisma from '../../config/prisma.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { generateAccessToken, generateRefreshToken, generateToken, verifyRefreshToken, verifyToken } from '../../utils/jwt.js';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken, verifyToken } 
+from '../../utils/jwt.js';
 
 
 const register = async ({ email, password, name }) => {
@@ -135,6 +136,9 @@ const changePassword = async (userId, oldPass, newPass) => {
   return true;
   
 };
+
+// later ill add forgot password
+// and reset password
 
 export default {
   register,
