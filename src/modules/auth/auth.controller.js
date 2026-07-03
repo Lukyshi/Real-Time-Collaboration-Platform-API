@@ -59,30 +59,6 @@ const logout = async (req, res, next) => {
   }
 };
 
-const updateProfile = async (req, res, next) => {
-
-  try{
-
-    const userId = req.user.id; // if i used req.user.id only user can update 
-    const userData = req.body;
-
-    const updatedProfile = await authService.updateProfile(userId, userData);
-
-    if(!updatedProfile) {
-      return res.status(404).json({
-        success: false,
-        message: 'profile not found'
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: updatedProfile
-    });
-  }catch(error) {
-    next(error);
-  }
-};
 
 const changePassword = async (req, res, next) => {
 
@@ -106,6 +82,5 @@ export default {
   login,
   refreshToken,
   logout,
-  updateProfile,
   changePassword
 }

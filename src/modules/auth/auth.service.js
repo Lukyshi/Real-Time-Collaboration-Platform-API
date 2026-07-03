@@ -107,36 +107,6 @@ const logout = async (token) => {
 };
 
 
-// ill split this later to my user service
-const updateProfile = async (userId, data) => {
-  return prisma.user.update({
-    where : { id: userId },
-    data
-  });
-};
-
-const changePassword = async (userId, oldPass, newPass) => {
-  const user = await prisma.user.findUnique({
-    where : { id : userId }
-  });
-
-  const valid = await comparePassword(oldPass, user.passwordHash);
-
-  if(!valid) throw new Error ('Invalid password');
-
-  const hashed = await hashedPassword(newPass);
-
-  await prisma.user.update({
-    where : { id: userId },
-    data : {
-      passwordHash: hashed,
-    },
-  });
-
-  return true;
-  
-};
-
 // later ill add forgot password
 // and reset password
 
@@ -145,8 +115,6 @@ export default {
   login,
   refresh,
   logout,
-  updateProfile,
-  changePassword
 }
 
 
