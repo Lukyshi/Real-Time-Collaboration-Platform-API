@@ -3,9 +3,10 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken, verifyToken } 
 from '../../utils/jwt.js';
+import { acceptInvitation } from '../workspace-invitation/invitation.service.js';
 
 
-const register = async ({ email, password, name }) => {
+const register = async ({ email, password, name, inviteToken }) => {
 
   const existingUser = await prisma.user.findUnique({
     where : { email }
@@ -26,6 +27,15 @@ const register = async ({ email, password, name }) => {
     }
   });
 
+  let invitationResult = null;
+  if(inviteToken) {
+    try {
+      invitationResult = await acceptInvitation(inviteToken, user);
+    } catch (err) {
+      console.log("Failed to auto-accept invitation after signup:", err.message);
+    }
+  }
+  
   return {
     id : user.id,
     email : user.email,

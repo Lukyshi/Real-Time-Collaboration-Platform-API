@@ -1,8 +1,20 @@
+import { success } from "zod";
 import authService from "./auth.service.js";
 
 const register = async (req, res, next) => {
   try { 
-    const user = await authService.register(req.body);
+
+    //
+    const { email, password, name, inviteToken } = req.body;
+
+    if ( !email || !password || !name ) {
+      return res.status(404).json({
+        success : false,
+        message : "Email, password, and name are required",
+      });
+    }
+
+    const user = await authService.register(email, password, name, inviteToken);
 
     res.status(201).json({
       success: true,
