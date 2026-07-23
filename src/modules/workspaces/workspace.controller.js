@@ -1,11 +1,11 @@
-import workspaceService  from "./workspace.service";
+import workspaceService  from "./workspace.service.js";
 
 const createWorkspace = async (req, res, next) => {
   try {
-    const workspace = req.body;
-    const userId = req.user.id;
+
+    const userId  = req.user.id;
     
-    const workspace = await workspaceService.createWorkspace(workspace, userId);
+    const workspace = await workspaceService.createWorkspace(req.body, userId);
 
     res.status(201).json({
       success : true,

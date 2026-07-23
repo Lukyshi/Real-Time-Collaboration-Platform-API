@@ -1,4 +1,4 @@
-import prisma from '../../prisma/prisma.js';
+import { prisma } from '../../config/prisma.js';
 
 
 const createWorkspace = async (data, userId) => {

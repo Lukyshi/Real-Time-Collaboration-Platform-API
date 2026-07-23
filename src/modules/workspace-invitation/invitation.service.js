@@ -1,4 +1,4 @@
-import prisma from "../../config/prisma.js";
+import { prisma } from "../../config/prisma.js";
 import crypto from "crypto";
 import { invitationQueue } from "../../jobs/invitation.queue.js";
 import { th } from "zod/v4/locales";

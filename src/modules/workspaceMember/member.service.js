@@ -1,4 +1,4 @@
-import prisma from '../../config/prisma.js';
+import { prisma } from '../../config/prisma.js';
 
 const addMember = async (workspaceId, userId, role = 'MEMBER') => {
   const member = await prisma.workspaceMember.create({

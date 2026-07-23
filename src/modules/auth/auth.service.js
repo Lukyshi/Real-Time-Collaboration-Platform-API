@@ -1,9 +1,9 @@
-import prisma from '../../config/prisma.js';
+import { prisma } from '../../config/prisma.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken, verifyToken } 
 from '../../utils/jwt.js';
-import { acceptInvitation } from '../workspace-invitation/invitation.service.js';
+import invitationService from '../workspace-invitation/invitation.service.js';
 
 
 const register = async ({ email, password, name, inviteToken }) => {
@@ -30,7 +30,7 @@ const register = async ({ email, password, name, inviteToken }) => {
   let invitationResult = null;
   if(inviteToken) {
     try {
-      invitationResult = await acceptInvitation(inviteToken, user);
+      invitationResult = await invitationService.acceptInvitation(inviteToken, user);
     } catch (err) {
       console.log("Failed to auto-accept invitation after signup:", err.message);
     }
