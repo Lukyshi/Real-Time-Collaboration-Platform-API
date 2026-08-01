@@ -91,22 +91,32 @@ const login = async ({email, password}) => {
 
 
 const refresh = async (token) => {
+  
+  try {
 
   if (!token) throw new Error('No token');
 
-  const stored = await prisma.findUnique({
+  const stored = await prisma.refreshToken.findUnique({
     where : { token }
   });
 
   if (!stored) throw new Error("Invalid refresh token");
-
+  
   const decoded = verifyRefreshToken(token);
 
-  const accessToken = generateAccessToken({id: decoded.id});
+
+  const accessToken = generateAccessToken({
+    id: decoded.id
+  });
 
   return {
     accessToken
   };
+
+  }catch(error) {
+    throw new Error('Invalid refresh token');
+  }
+
 };
 
 const logout = async (token) => {

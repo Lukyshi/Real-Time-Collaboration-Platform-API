@@ -14,7 +14,7 @@ const register = async (req, res, next) => {
       });
     }
 
-    const user = await authService.register(email, password, name, inviteToken);
+    const user = await authService.register({email, password, name, inviteToken});
 
     res.status(201).json({
       success: true,
@@ -28,6 +28,15 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const user = await authService.login(req.body);
+
+// Store refresh token in an HTTP-only cookie so the client can send it back
+// automatically when requesting a new access token
+    res.cookie('refreshToken', user.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
 
     res.status(200).json({
       success : true,
@@ -43,7 +52,7 @@ const refreshToken = async (req, res, next) => {
   try{
     const token = req.cookies.refreshToken;
 
-    const result = await authService.refreshToken(token);
+    const result = await authService.refresh(token);
 
     res.status(200).json({
       success: true,

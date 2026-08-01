@@ -5,7 +5,7 @@ const validate = (schema) => {
     if(!result.success) {
       return res.status(404).json({
         succes : false,
-        errors : result.error.flatter().fieldErrors,
+        errors : result.error.flatten().fieldErrors,
       });
     }
 

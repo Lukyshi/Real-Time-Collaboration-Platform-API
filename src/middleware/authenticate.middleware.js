@@ -14,7 +14,7 @@ const authenticate = (req, res, next) => {
   const token  = authHeader.split(" ")[1];
 
   try {
-    const decoded = verifyAccessToken(token);
+    const decoded = verifyToken(token);
     req.user = decoded;
 
     next();
