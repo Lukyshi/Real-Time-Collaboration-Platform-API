@@ -3,20 +3,21 @@ import { prisma } from '../../config/prisma.js';
 
 const createWorkspace = async (data, userId) => {
 
-  const workspaceCreated = await prisma.$transaction(async (tx) => {
+  try {
+    const workspaceCreated = await prisma.$transaction(async (tx) => {
 
     const workspace = await tx.workspace.create({
       data : {
         name : data.name,
         description : data.description,
-        ownerId : userId
+        ownerId : data.userId
       },
     });
 
     await tx.workspaceMember.create({
       data : {
         workspaceId : workspace.id,
-        userId,
+        userId: data.userId,
         role : "OWNER",
       },
     });
@@ -26,16 +27,19 @@ const createWorkspace = async (data, userId) => {
   });
 
   return workspaceCreated;
-
+  
+  }catch(error) {
+    throw new Error('Failed to create workspace');
+  }
 };
 
 // gets all workspaces belonging to the current user.
-const getWorkspaces = async () => {
+const getWorkspaces = async (userId) => {
   const workspaces = await prisma.workspace.findMany({
     where : {
       members : {
         some : {
-          userId : req.user.id
+          userId,
         },
       },
     },
@@ -45,9 +49,17 @@ const getWorkspaces = async () => {
 
 };
 
-const getWorkspaceById = async (id) => {
-  const workspace = await prisma.workspace.findUnique({
-    where : { id },
+const getWorkspaceById = async (id, userId) => {
+  const workspace = await prisma.workspace.findFirst({
+    where : { 
+      id,
+      members : {
+        some : {
+          userId,
+        },
+      },
+    },
+
     select : {
       id : true,
       name : true,
@@ -66,18 +78,17 @@ const getWorkspaceById = async (id) => {
 
 };
 
-const updateWorkspace = async (id, data) => {
+const updateWorkspace = async (id, name, description) => {
   const updateWorkspace = await prisma.workspace.update({
     where : { id },
     data : {
-      name : data.name,
-      description : data.description,
-      updatedAt : true
-    }
+      name,
+      description,
+    },
   });
 
   return updateWorkspace;
-
+  
 }
 
 const deleteWorkspace = async (id) => {

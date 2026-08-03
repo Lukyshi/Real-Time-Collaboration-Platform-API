@@ -4,8 +4,9 @@ const createWorkspace = async (req, res, next) => {
   try {
 
     const userId  = req.user.id;
+    const { name, description } = req.body; 
     
-    const workspace = await workspaceService.createWorkspace(req.body, userId);
+    const workspace = await workspaceService.createWorkspace({name, description, userId});
 
     res.status(201).json({
       success : true,
@@ -18,7 +19,9 @@ const createWorkspace = async (req, res, next) => {
 
 const getAllWorkspaces = async (req, res, next) => {
   try {
-    const workspace = await workspaceService.getWorkspaces();
+    const userId = req.user.id;
+
+    const workspace = await workspaceService.getWorkspaces(userId);
 
     res.status(200).json({
       success : true,
@@ -31,11 +34,12 @@ const getAllWorkspaces = async (req, res, next) => {
 
 const getWorkspaceById = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
+    const id = req.params.workspaceId;
+    const userId = req.user.id;
 
-    const workspace = await workspaceService.getWorkspaceById(id);
+    const workspace = await workspaceService.getWorkspaceById(id, userId);
 
-    req.status(200).json({
+    res.status(200).json({
       success : true,
       data : workspace
     });
@@ -46,27 +50,28 @@ const getWorkspaceById = async (req, res, next) => {
 
 const updateWorkspace = async (req, res, next) => {
   try {
-    const id = req.params.id;
-    const body = req.body;
+    const id = req.params.workspaceId;
+    const { name, description } = req.body;
 
-    const worspace = await workspaceService.updateWorkspace(id, body);
+    const workspace = await workspaceService.updateWorkspace(id, name, description);
 
-    req.status(200).json({
+    res.status(200).json({
       success : true,
-      data : worspace
+      data : workspace
     });
   }catch(error) {
     next(error);
   }
 }
 
+// untested
 const deleteWorkspace = async (req, res, next) => {
   try {
-    const id = req.params.id;
+    const id = req.params.workspaceId;
 
     const workspace = await workspaceService.deleteWorkspace(id);
 
-    req.status(200).json({
+    res.status(200).json({
       success : true,
       message : 'Workspace deleted'
     });

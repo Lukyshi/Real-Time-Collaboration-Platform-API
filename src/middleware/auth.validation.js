@@ -1,10 +1,10 @@
-const validate = (schema) => {
+export const validate = (schema) => {
   return (req, res, next) => {
     const result = schema.safeParse(req.body);
 
     if(!result.success) {
-      return res.status(404).json({
-        succes : false,
+      return res.status(400).json({
+        success : false,
         errors : result.error.flatten().fieldErrors,
       });
     }
@@ -17,4 +17,21 @@ const validate = (schema) => {
   };
 };
 
-export default validate;
+export const updateValidate = (schema) => {
+  return (req, res, next) => {
+    const result = schema.safeParse({params : req.params, body : req.body});
+
+    if(!result.success) {
+      return res.status(400).json({
+        success : false,
+        errors : result.error.flatten().fieldErrors,
+      });
+    }
+
+    req.params = result.data.params;
+    req.body = result.data.body;
+
+    next();
+
+  };
+};

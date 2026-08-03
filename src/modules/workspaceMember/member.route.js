@@ -3,7 +3,7 @@ import memberController from "./member.controller.js";
 import { addMemberSchema, updateMemberSchema } from "./member.validation.js";
 import authMiddleware from "../../middleware/authenticate.middleware.js";
 import authorizeWorkspaceRole from "../../middleware/authorization.middleware.js";
-import validate from "../../middleware/auth.validation.js";
+import { validate, updateValidate } from "../../middleware/auth.validation.js";
 
 const router = Router();
 
@@ -13,7 +13,7 @@ router.post('/:workspaceId/members', authorizeWorkspaceRole("OWNER", "ADMIN") ,v
 
 router.get('/:workspaceId/members/:userId', memberController.getMember);
 
-router.patch('/:workspaceId/members/:userId', authorizeWorkspaceRole("OWNER", "ADMIN"), validate(updateMemberSchema), memberController.updateRole);
+router.patch('/:workspaceId/members/:userId', authorizeWorkspaceRole("OWNER", "ADMIN"), updateValidate(updateMemberSchema), memberController.updateRole);
 
 router.delete('/:workspaceId/members/:userId', authorizeWorkspaceRole("OWNER"), memberController.removeMember);
 
