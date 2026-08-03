@@ -3,6 +3,9 @@ import { z } from 'zod';
 export const addMemberSchema = z.object({
   params : z.object({
     workspaceId : z.uuid(),
+  }),
+  body : z.object({
+    userId : z.uuid(),
     role : z.enum([ "OWNER", "ADMIN", "MEMBER" ]).default("MEMBER")
   })
 });

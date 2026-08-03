@@ -6,7 +6,7 @@ const addMember = async (req, res, next) => {
     const { workspaceId } = req.params;
     const { userId, role } = req.body;
 
-    const member = await memberService.addMembers(workspaceId, userId, role);
+    const member = await memberService.addMember(workspaceId, userId, role);
 
     return res.status(201).json({
       success : true,

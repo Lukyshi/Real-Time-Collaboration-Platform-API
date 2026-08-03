@@ -9,7 +9,7 @@ const router = Router();
 
 router.use(authMiddleware.authenticate);
 
-router.post('/:workspaceId/members', authorizeWorkspaceRole("OWNER", "ADMIN") ,validate(addMemberSchema), memberController.addMember);
+router.post('/:workspaceId/members', authorizeWorkspaceRole("OWNER", "ADMIN"), updateValidate(addMemberSchema), memberController.addMember);
 
 router.get('/:workspaceId/members/:userId', memberController.getMember);
 
