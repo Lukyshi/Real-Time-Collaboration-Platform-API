@@ -21,6 +21,7 @@ export const createProjectSchema = z.object({
 export const updateProjectSchema = z.object({
   params: z.object({
     projectId: z.uuid(),
+    workspaceId : z.uuid()
   }),
   body: z.object({
     name: z.string().trim().min(3).max(50).optional(),

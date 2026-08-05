@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma.js";
+import { prisma } from "../../config/prisma.js";
 
 const createProject = async (workspaceId, createdById, data) => {
   const workspace = await prisma.workspace.findUnique({
@@ -71,12 +71,15 @@ const getProjectById = async (id, userId) => {
   return project;
 };
 
-const updateProject = async (id, data) => {
-  const existingProject = await prisma.project.findUnique({
-    where: { id },
+const updateProject = async (id, workspaceId, data) => {
+  const existingProject = await prisma.project.findFirst({
+    where: {
+      id,
+      workspaceId: workspaceId,
+    },
   });
 
-  if (!existingProject) throw new Error("Project not found");
+  if (!existingProject) throw new Error("Project not found in this workspace");
 
   return prisma.project.update({
     where: { id },
@@ -87,12 +90,12 @@ const updateProject = async (id, data) => {
   });
 };
 
-const deleteProject = async (id) => {
+const deleteProject = async (id, workspaceId) => {
   const projectExist = await prisma.project.findUnique({
-    where: { id },
+    where: { id, workspaceId: workspaceId },
   });
 
-  if (!projectExist) throw new Error("Project not found");
+  if (!projectExist) throw new Error("Project not found in this workspace");
 
   return await prisma.project.delete({
     where: { id },

@@ -11,9 +11,9 @@ const router = Router();
 router.use(authenticateMiddleware.authenticate);
 
 router.post('/workspace/:workspaceId/projects', updateValidate(createProjectSchema), authorizeWorkspaceRole("OWNER", "ADMIN"), projectController.createProject);
-router.get('/workspace/:workspaceId/projects', projectController.getProject);
-router.get('/projects/:projectId', projectController.getProjectById);
-router.patch('/projects/:projectId', updateValidate(updateProjectSchema), authorizeWorkspaceRole("OWNER", "ADMIN"), projectController.updateProject);
-router.delete('/projects/:projectId', authorizeWorkspaceRole("OWNER", "ADMIN"), projectController.deleteProject);
+router.get('/workspace/:workspaceId/projects', projectController.getProjects);
+router.get('/workspace/:workspaceId/projects/:projectId', projectController.getProjectById);
+router.patch('/workspace/:workspaceId/projects/:projectId', updateValidate(updateProjectSchema), authorizeWorkspaceRole("OWNER", "ADMIN"), projectController.updateProject);
+router.delete('/workspace/:workspaceId/projects/:projectId', authorizeWorkspaceRole("OWNER", "ADMIN"), projectController.deleteProject);
 
 export default router;

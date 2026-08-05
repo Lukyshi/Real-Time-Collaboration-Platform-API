@@ -57,10 +57,10 @@ const getProjectById = async (req, res, next) => {
 
 const updateProject = async (req, res, next) => {
   try {
-    const { projectId } = req.params;
+    const { projectId, workspaceId } = req.params;
     const { name, description } = req.body;
 
-    const project = await projectService.updateProject(projectId, {
+    const project = await projectService.updateProject(projectId, workspaceId, {
       name,
       description,
     });
@@ -74,11 +74,12 @@ const updateProject = async (req, res, next) => {
   }
 };
 
+//untested
 const deleteProject = async (req, res, next) => {
   try {
-    const { projectId } = req.params;
+    const { projectId, workspaceId } = req.params;
 
-    await projectService.deleteProject(projectId);
+    await projectService.deleteProject(projectId, workspaceId);
 
     return res.status(200).json({
       success: true,
