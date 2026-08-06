@@ -20,14 +20,31 @@ const createProject = async (workspaceId, createdById, data) => {
 
   if (!member) throw new Error("User is not a member of the workspace");
 
-  return prisma.project.create({
-    data: {
-      name: data.name,
-      description: data.description,
-      workspaceId,
-      createdById,
-    },
+  const createProject = await prisma.$transaction(async (tx) => {
+    const project = await tx.project.create({
+      data: {
+        name: data.name,
+        description: data.description,
+        workspaceId,
+        createdById,
+      },
+    });
+
+    await tx.activityLog.create({
+      data : {
+        workspaceId,
+        userId: createdById,
+        action: "CREATE_PROJECT",
+        entityType: "PROJECT",
+        entityId: project.id,
+      }
+    });
+
+    return project;
   });
+
+  return createProject;
+  
 };
 
 const getProject = async (userId) => {
