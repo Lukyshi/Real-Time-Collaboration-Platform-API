@@ -1,5 +1,5 @@
 import { Router } from "express";
-import taskController from "./task.controller";
+import taskController from "./task.controller.js";
 import { validate, updateValidate } from "../../middleware/auth.validation.js";
 import { createTaskSchema, updateTaskschema } from "./task.validation.js";
 import authenticateMiddleware from "../../middleware/authenticate.middleware.js";
@@ -12,7 +12,7 @@ router.use(authenticateMiddleware.authenticate);
 
 router.post(
   "/workspaces/:workspaceId/projects/:projectId/tasks",
-  authorizeWorkspaceRole("OWNER, ADMIN"),
+  authorizeWorkspaceRole("OWNER", "ADMIN"),
   updateValidate(createTaskSchema),
   taskController.createTask,
 );
@@ -21,13 +21,13 @@ router.get("/workspaces/:workspaceId/projects/:projectId/tasks", taskController.
 router.get("/workspaces/:workspaceId/projects/:projectId/tasks/:taskId", taskController.getTaskById);
 router.patch(
   "/tasks/:taskId",
-  authorizeWorkspaceRole("OWNER, ADMIN"),
+  authorizeWorkspaceRole("OWNER", "ADMIN"),
   updateValidate(updateTaskschema),
   taskController.updateTask,
 );
 router.delete(
   "/workspaces/:workspaceId/projects/:projectId/tasks/:taskId",
-  authorizeWorkspaceRole("OWNER, ADMIN"),
+  authorizeWorkspaceRole("OWNER", "ADMIN"),
   taskController.deleteTask,
 );
 
