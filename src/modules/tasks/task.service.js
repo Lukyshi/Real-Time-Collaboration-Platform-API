@@ -5,8 +5,9 @@ import { prisma } from "../../config/prisma.js";
 // the owner or the admin should creata a task and assigned it to a member
 //
 
-const createTask = async (projectId, createdById, assignedToId, data) => {
-  const project = await prisma.project.findUnique({
+const createTask = async (workspaceId, projectId, createdById, data, ) => {
+
+  const project = await prisma.project.findFirst({
     where: { id: projectId },
   });
 
@@ -21,7 +22,7 @@ const createTask = async (projectId, createdById, assignedToId, data) => {
         status: data.status || "TODO",
         priority: data.priority || "LOW",
         due_date: data.due_date,
-        assignedToId,
+        assignedToId : data.assignedToId,
         createdById,
       },
     });

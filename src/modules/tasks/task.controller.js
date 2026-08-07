@@ -3,14 +3,13 @@ import taskService from "./task.service.js";
 
 const createTask = async (req, res, next) => {
   try {
-    const { projectId } = req.params;
+    const { workspaceId, projectId } = req.params;
     const createdById = req.user.id;
-    const assignedToId = req.user.id;
 
     const task = await taskService.createTask(
+      workspaceId,
       projectId,
       createdById,
-      assignedToId,
       req.body,
     );
 
@@ -25,9 +24,10 @@ const createTask = async (req, res, next) => {
 
 const getAllTasks = async (req, res, next) => {
   try {
+    const { projectId } = req.params;
     const userId = req.user.id;
 
-    const task = await taskService.getAllTasks(userId);
+    const task = await taskService.getAllTasks(projectId, userId);
 
     res.status(200).json({
       success: true,
@@ -71,7 +71,7 @@ const updateTask = async (req, res, next) => {
 
 const deleteTask = async (req, res, next) => {
   try {
-    const { taskId, projectId } = req.params;
+    const { taskId, projectId} = req.params;
 
     const task = await taskService.deleteTask(taskId, projectId);
 

@@ -1,9 +1,10 @@
 import { z } from "zod";
 
 export const createTaskSchema = z.object({
-  params: {
+  params: z.object({
     projectId: z.uuid(),
-  },
+    workspaceId : z.uuid()
+  }),
   body: z.object({
     title: z
       .string()
@@ -15,16 +16,20 @@ export const createTaskSchema = z.object({
       .trim()
       .max(500, "task description must not exceed in 50 characters")
       .optional(),
+    
+    assignedToId : z.uuid().optional(),
+    
   }),
 });
 
 export const updateTaskschema = z.object({
-  params : {
-    taskId : z.uuid(),
-    projectId : z.uuid(),
-  },
-  body : {
-      title: z
+  params: z.object({
+    taskId: z.uuid(),
+    projectId: z.uuid(),
+    workspaceId : z.uuid()
+  }),
+  body: {
+    title: z
       .string()
       .trim()
       .min(3, "task title must be 3 character at least")
@@ -34,5 +39,5 @@ export const updateTaskschema = z.object({
       .trim()
       .max(500, "task description must not exceed in 50 characters")
       .optional(),
-  }
+  },
 });
