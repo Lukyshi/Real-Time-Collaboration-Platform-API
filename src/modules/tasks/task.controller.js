@@ -1,5 +1,6 @@
 import { success } from "zod";
 import taskService from "./task.service.js";
+import { use } from "react";
 
 const createTask = async (req, res, next) => {
   try {
@@ -24,10 +25,10 @@ const createTask = async (req, res, next) => {
 
 const getAllTasks = async (req, res, next) => {
   try {
-    const { projectId } = req.params;
+    const { projectId, workspaceId } = req.params;
     const userId = req.user.id;
 
-    const task = await taskService.getAllTasks(projectId, userId);
+    const task = await taskService.getAllTasks(workspaceId, projectId, userId);
 
     res.status(200).json({
       success: true,
@@ -40,10 +41,10 @@ const getAllTasks = async (req, res, next) => {
 
 const getTaskById = async (req, res, next) => {
   try {
-    const { taskId } = req.params;
+    const { taskId, workspaceId, projectId } = req.params;
     const userId = req.user.id;
 
-    const task = await taskService.getTaskById(taskId, userId);
+    const task = await taskService.getTaskById(taskId, workspaceId, projectId, userId);
 
     res.status(200).json({
       success: true,

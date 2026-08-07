@@ -5,8 +5,7 @@ import { prisma } from "../../config/prisma.js";
 // the owner or the admin should creata a task and assigned it to a member
 //
 
-const createTask = async (workspaceId, projectId, createdById, data, ) => {
-
+const createTask = async (workspaceId, projectId, createdById, data) => {
   const project = await prisma.project.findFirst({
     where: { id: projectId },
   });
@@ -22,7 +21,7 @@ const createTask = async (workspaceId, projectId, createdById, data, ) => {
         status: data.status || "TODO",
         priority: data.priority || "LOW",
         due_date: data.due_date,
-        assignedToId : data.assignedToId,
+        assignedToId: data.assignedToId,
         createdById,
       },
     });
@@ -43,13 +42,16 @@ const createTask = async (workspaceId, projectId, createdById, data, ) => {
   return createTask;
 };
 
-const getAllTasks = async (userId) => {
+const getAllTasks = async (workspaceId, projectId, userId) => {
   const tasks = await prisma.task.findMany({
     where: {
       project: {
+        workspaceId,
         workspace: {
-          some: {
-            userId,
+          members: {
+            some: {
+              userId,
+            },
           },
         },
       },
@@ -59,31 +61,34 @@ const getAllTasks = async (userId) => {
   return tasks;
 };
 
-const getTaskById = async (id, userId) => {
-  const tasks = await prisma.task.findFirst.apply({
+const getTaskById = async (id, workspaceId, projectId, userId) => {
+  console.log({
+  id,
+  projectId,
+  workspaceId,
+  userId,
+});
+  const task = await prisma.task.findFirst({
     where: {
       id,
+      projectId,
       project: {
+        workspaceId,
         workspace: {
-          some: {
-            userId,
+          members: {
+            some: {
+              userId,
+            },
           },
         },
-      },
-      data: {
-        projectId: true,
-        title: true,
-        description: true,
-        status: true,
-        priority: true,
-        due_date: true,
-        assignedToI: true,
-        createdById: true,
       },
     },
   });
 
-  return tasks;
+  if(!task) throw new Error("Task not found");
+
+  return task;
+
 };
 
 const updateTask = async (id, projectId, data) => {
