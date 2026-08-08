@@ -7,7 +7,6 @@ import authorizeWorkspaceRole from "../../middleware/authorization.middleware.js
 
 const router = Router();
 
-//untested
 router.use(authenticateMiddleware.authenticate);
 
 router.post(
@@ -20,7 +19,7 @@ router.post(
 router.get("/workspaces/:workspaceId/projects/:projectId/tasks", taskController.getAllTasks);
 router.get("/workspaces/:workspaceId/projects/:projectId/tasks/:taskId", taskController.getTaskById);
 router.patch(
-  "/tasks/:taskId",
+  "/workspaces/:workspaceId/projects/:projectId/tasks/:taskId",
   authorizeWorkspaceRole("OWNER", "ADMIN"),
   updateValidate(updateTaskschema),
   taskController.updateTask,

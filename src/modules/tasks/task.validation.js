@@ -18,6 +18,8 @@ export const createTaskSchema = z.object({
       .optional(),
     
     assignedToId : z.uuid().optional(),
+    status : z.enum(["TODO", "IN_PROGRESS", "REVIEW", "DONE"]).default("TODO"),
+    priority : z.enum(["LOW", "MEDIUM", "HIGH", "URGENT" ]).default("LOW")
     
   }),
 });
@@ -28,8 +30,8 @@ export const updateTaskschema = z.object({
     projectId: z.uuid(),
     workspaceId : z.uuid()
   }),
-  body: {
-    title: z
+  body: z.object({
+     title: z
       .string()
       .trim()
       .min(3, "task title must be 3 character at least")
@@ -39,5 +41,10 @@ export const updateTaskschema = z.object({
       .trim()
       .max(500, "task description must not exceed in 50 characters")
       .optional(),
-  },
+
+    status : z.enum(["TODO", "IN_PROGRESS", "REVIEW", "DONE"]).default("TODO"),
+    priority : z.enum(["LOW", "MEDIUM", "HIGH", "URGENT" ]).default("LOW"),
+    assignedToId : z.uuid().optional()
+  
+  }),
 });

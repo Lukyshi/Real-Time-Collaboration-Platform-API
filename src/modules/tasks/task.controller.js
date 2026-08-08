@@ -57,9 +57,10 @@ const getTaskById = async (req, res, next) => {
 
 const updateTask = async (req, res, next) => {
   try {
-    const { taskId, projectId } = req.params;
+    const { taskId, workspaceId, projectId } = req.params;
+    const userId = req.user.id;
 
-    const task = await taskService.updateTask(taskId, projectId, req.body);
+    const task = await taskService.updateTask(taskId, workspaceId, projectId, userId, req.body);
 
     res.status(200).json({
       success: true,
@@ -72,9 +73,10 @@ const updateTask = async (req, res, next) => {
 
 const deleteTask = async (req, res, next) => {
   try {
-    const { taskId, projectId} = req.params;
+    const { taskId, workspaceId, projectId} = req.params;
+    const userId = req.user.id;
 
-    const task = await taskService.deleteTask(taskId, projectId);
+    const task = await taskService.deleteTask(taskId, workspaceId, projectId, userId);
 
     res.status(200).json({
       success: true,

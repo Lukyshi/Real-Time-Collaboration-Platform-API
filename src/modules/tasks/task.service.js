@@ -6,6 +6,13 @@ import { prisma } from "../../config/prisma.js";
 //
 
 const createTask = async (workspaceId, projectId, createdById, data) => {
+
+  const workspace = await prisma.workspace.findUnique({
+    where : { id : workspaceId },
+  });
+
+  if(!workspace) throw new Error("Workspace not found");
+
   const project = await prisma.project.findFirst({
     where: { id: projectId },
   });
@@ -62,12 +69,7 @@ const getAllTasks = async (workspaceId, projectId, userId) => {
 };
 
 const getTaskById = async (id, workspaceId, projectId, userId) => {
-  console.log({
-  id,
-  projectId,
-  workspaceId,
-  userId,
-});
+
   const task = await prisma.task.findFirst({
     where: {
       id,
@@ -91,28 +93,39 @@ const getTaskById = async (id, workspaceId, projectId, userId) => {
 
 };
 
-const updateTask = async (id, projectId, data) => {
-  const findTask = await prisma.task.findFirst({
-    where: { id, projectId: projectId },
+// fix : update function, and delete
+// later fix : update getting null assignedId
+const updateTask = async (id, workspaceId, projectId, userId, data) => {
+
+  const task = await prisma.task.findFirst({
+    where : {
+      id,
+      projectId,
+      project : {
+        workspaceId,
+      },
+    },
   });
 
-  if (!findTask) throw new Error("Task not found in this project");
+  if (!task) throw new Error("Task not found in this project");
 
   const updateTask = await prisma.$transaction(async (tx) => {
-    const task = await tx.task.create({
+    const task = await tx.task.update({
+      where : { id },
       data: {
         projectId,
         title: data.title,
         description: data.description,
         status: data.status,
         priority: data.priority,
+        assignedToId : data.assignedToId
       },
     });
 
     await tx.activityLog.create({
       data: {
         workspaceId,
-        userId,
+        userId : userId,
         action: "UPDATE_TASK",
         entityType: "TASK",
         entityId: task.id,
@@ -125,15 +138,19 @@ const updateTask = async (id, projectId, data) => {
   return updateTask;
 };
 
-const deleteTask = async (id, projectId) => {
-  const findTask = await prisma.task.findFirst({
-    where: {
+const deleteTask = async (id, workspaceId, projectId, userId) => {
+
+  const task = await prisma.task.findFirst({
+    where : {
       id,
-      projectId: projectId,
+      projectId,
+      project : {
+        workspaceId,
+      },
     },
   });
 
-  if (!findTask) throw new Error("Task not found in this project");
+  if (!task) throw new Error("Task not found in this project");
 
   const deleteTask = await prisma.$transaction(async (tx) => {
     const task = await tx.task.delete({
@@ -143,7 +160,7 @@ const deleteTask = async (id, projectId) => {
     await tx.activityLog.create({
       data: {
         workspaceId,
-        userId,
+        userId : userId,
         action: "DELETE_TASK",
         entityType: "TASK",
         entityId: task.id,
