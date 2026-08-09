@@ -110,7 +110,21 @@ model User {
 
   workspaceInvitations WorkspaceInvitation[] @relation("InvitationSender")
 
+  emailVerification EmailVerification? @relation("UserVerificationTokens")
+
 }
+
+model EmailVerification {
+  id String @id @default(uuid())
+  userId String @unique
+  tokenHash String @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation("UserVerificationTokens", fields: [userId], references: [id], onDelete: Cascade)
+
+}
+
 
 model Workspace {
   id String @id @default(uuid())
