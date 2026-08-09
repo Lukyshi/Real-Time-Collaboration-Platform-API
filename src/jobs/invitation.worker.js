@@ -2,6 +2,7 @@ import { Worker } from 'bullmq';
 import { redis } from '../config/redis.js';
 import expireInvitation from '../jobs/invitation.expiry.job.js';
 import { sendInvitationEmail } from '../modules/workspace-invitation/email.service.js';
+import { sendVerificationEmail } from '../modules/emailVerification/sendVerificationEmail.transport.js';
 
 export const worker = new Worker(
   
@@ -22,6 +23,17 @@ export const worker = new Worker(
           to: email, 
           token, 
           workspaceName
+        });
+
+        break;
+      }
+
+      case "send-verification-email" : {
+        const { email, tokenHash, name } = job.data;
+        await sendVerificationEmail({
+          to : email,
+          tokenHash,
+          name
         });
 
         break;

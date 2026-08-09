@@ -3,13 +3,17 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken, verifyToken } 
 from '../../utils/jwt.js';
-import invitationService from '../workspace-invitation/invitation.service.js';
+import emailVerification from '../emailVerification/emailVerification.service.js';
+import e from 'express';
 
+// task : isVerified should use
+// creata a schema email verification
+const register = async ({ email, password, name, }) => {
 
-const register = async ({ email, password, name, inviteToken }) => {
+  const normalizedEmail = email.trim().toLowerCase();
 
   const existingUser = await prisma.user.findUnique({
-    where : { email }
+    where : { email : normalizedEmail }
   });
 
   if(existingUser) {
@@ -20,26 +24,20 @@ const register = async ({ email, password, name, inviteToken }) => {
 
   const user = await prisma.user.create({
     data : {
-      email,
+      email : normalizedEmail,
       passwordHash : hashedPassword,
       name,
       isVerified: false
     }
   });
 
-  let invitationResult = null;
-  if(inviteToken) {
-    try {
-      invitationResult = await invitationService.acceptInvitation(inviteToken, user);
-    } catch (err) {
-      console.log("Failed to auto-accept invitation after signup:", err.message);
-    }
-  }
-  
+  await emailVerification.createVerification(user);
+
   return {
     id : user.id,
     email : user.email,
-    name : user.name
+    name : user.name,
+    isVerified : user.isVerified
   };
 };
 
@@ -67,6 +65,16 @@ const login = async ({email, password}) => {
     throw error;
   }
 
+  if(!user.isVerified) {
+    const error = new Error(
+      "Please verify your email before logging in"
+    );
+
+    error.code = "EMAIL_NOT_VERIFIED";
+
+    throw error;
+  }
+
   const token = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
@@ -74,7 +82,7 @@ const login = async ({email, password}) => {
     data : {
       token: refreshToken,
       userId: user.id,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 100)
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     }
   });
 
@@ -89,7 +97,7 @@ const login = async ({email, password}) => {
   };
 };
 
-
+// untested
 const refresh = async (token) => {
   
   try {
@@ -119,6 +127,7 @@ const refresh = async (token) => {
 
 };
 
+// need to fix
 const logout = async (token) => {
   await prisma.refreshToken.deleteMany({
     where: { token }
