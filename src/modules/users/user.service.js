@@ -29,7 +29,6 @@ const updateProfile = async (userId, data) => {
       id: true,
       name: true,
       email: true,
-      isVerified: true,
       createdAt : true,
       updatedAt : true
     },

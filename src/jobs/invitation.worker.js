@@ -4,6 +4,8 @@ import expireInvitation from '../jobs/invitation.expiry.job.js';
 import { sendInvitationEmail } from '../modules/workspace-invitation/email.service.js';
 import { sendVerificationEmail } from '../modules/emailVerification/sendVerificationEmail.transport.js';
 
+console.log("🚀 INVITATION WORKER STARTED");
+
 export const worker = new Worker(
   
   "invitation",
@@ -29,12 +31,17 @@ export const worker = new Worker(
       }
 
       case "send-verification-email" : {
-        const { email, tokenHash, name } = job.data;
+        const { email, token, name } = job.data;
+
+        console.log("📨 Worker received verification job:", email);
+
         await sendVerificationEmail({
           to : email,
-          tokenHash,
+          token,
           name
         });
+
+        console.log("✅ Verification email sent:", email);
 
         break;
       }

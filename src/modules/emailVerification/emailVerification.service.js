@@ -16,9 +16,9 @@ const hashToken = async (token) => {
 
 const createVerification = async (user) => {
   const rawToken = crypto.randomBytes(32).toString("hex");
-  const tokenHash = hashToken(rawToken);
+  const tokenHash = await hashToken(rawToken);
 
-  const expiresAt = new Date(Date.now + VERIFICATION_TOKEN_EXPIRY_MS);
+  const expiresAt = new Date(Date.now() + VERIFICATION_TOKEN_EXPIRY_MS);
 
   //upsert : means update natin tong record kung nag eexist, kung hindi creat it
   await prisma.emailVerification.upsert({
@@ -36,7 +36,9 @@ const createVerification = async (user) => {
     },
   });
 
-  await invitationQueue.add(
+  console.log("📤 Adding verification email job:", user.email);
+
+  const job = await invitationQueue.add(
     "send-verification-email",
     {
       email: user.email,
@@ -44,7 +46,7 @@ const createVerification = async (user) => {
       name: user.name,
     },
     {
-      attempt: 3,
+      attempts: 3,
       Backoff: {
         type: "exponential",
         delay: 5000,
@@ -53,22 +55,23 @@ const createVerification = async (user) => {
       removeOnFail: 1000,
     },
   );
+  console.log("✅ Verification job added:", job.id);
 };
 
 const verifyEmail = async (rawToken) => {
   if (!rawToken) throw new Error("Invalid verification token");
 
-  const tokenHash = hashToken(rawToken);
+  const tokenHash = await hashToken(rawToken);
 
   const verification = await prisma.emailVerification.findUnique({
-    where: { id: tokenHash },
+    where: { tokenHash },
   });
 
   if (!verification) throw new Error("Invalid or expired verification token");
 
   if (verification.expiresAt < new Date()) {
     await prisma.emailVerification.delete({
-      where: { id: verification },
+      where: { id: verification.id },
     });
 
     throw new Error("Invalid or expired verification token");
@@ -76,7 +79,7 @@ const verifyEmail = async (rawToken) => {
 
   await prisma.$transaction(async (tx) => {
     await tx.user.update({
-      where: { id: verification.id },
+      where: { id: verification.userId },
       data: {
         isVerified: true,
       },

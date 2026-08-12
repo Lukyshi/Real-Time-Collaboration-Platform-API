@@ -5,7 +5,7 @@ const register = async (req, res, next) => {
   try { 
 
     //
-    const { email, password, name, inviteToken } = req.body;
+    const { email, password, name } = req.body;
 
     if ( !email || !password || !name ) {
       return res.status(404).json({
@@ -14,8 +14,9 @@ const register = async (req, res, next) => {
       });
     }
 
-    const user = await authService.register({email, password, name, inviteToken});
+    const user = await authService.register({email, password, name});
 
+    // fix : didnt return data after register
     res.status(201).json({
       success: true,
       data: user

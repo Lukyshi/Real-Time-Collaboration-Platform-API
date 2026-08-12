@@ -1,9 +1,8 @@
-import { id } from "zod/v4/locales";
-import { prisma } from "../../config/prisma.js";
 import { transport } from "../workspace-invitation/email.service.js";
 
 export const sendVerificationEmail = async ({ to, token, name }) => {
-  const verifyLink = `${process.env.APP_URL}/auth/verify-email?token=${encodeURIComponent(token)}`;
+  console.log("📧 sendVerificationEmail CALLED:", to);
+  const verifyLink = `${process.env.APP_URL}/api/v1/verification/verify-email?token=${encodeURIComponent(token)}`;
 
   return transport.sendMail({
     from: process.env.EMAIL_FROM,

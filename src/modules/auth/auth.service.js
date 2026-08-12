@@ -3,12 +3,13 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken, verifyToken } 
 from '../../utils/jwt.js';
-import emailVerification from '../emailVerification/emailVerification.service.js';
+import verify from '../emailVerification/emailVerification.service.js';
 import e from 'express';
 
-// task : isVerified should use
-// creata a schema email verification
-const register = async ({ email, password, name, }) => {
+// what if in register they dont follow @gmail.com? 
+// task tom : test regitser and login if they successful verify
+// fix : if its fail to regsiter it shouldnt be save in db
+const register = async ({ email, password, name }) => {
 
   const normalizedEmail = email.trim().toLowerCase();
 
@@ -31,7 +32,7 @@ const register = async ({ email, password, name, }) => {
     }
   });
 
-  await emailVerification.createVerification(user);
+  await verify.createVerification(user);
 
   return {
     id : user.id,

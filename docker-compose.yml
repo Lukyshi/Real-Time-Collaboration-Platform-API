@@ -11,6 +11,13 @@ services:
       - REDIS_HOST=redis 
       - REDIS_PORT=6379
       - DATABASE_URL=${DATABASE_URL}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - EMAIL_FROM=${EMAIL_FROM}
+      
     volumes:
       - .:/app
       - /app/node_modules
