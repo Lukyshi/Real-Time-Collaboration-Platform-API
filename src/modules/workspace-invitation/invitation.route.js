@@ -2,17 +2,14 @@ import { Router } from "express";
 import invitationController from "./invitation.controller.js";
 import authenticateMiddleware from "../../middleware/authenticate.middleware.js";
 import authorizeWorkspaceRole from "../../middleware/authorization.middleware.js";
+import { updateValidate } from "../../middleware/auth.validation.js";
+import { createWorkspaceInvitationSchema } from "./workspace.validation.js";
 
 const router = Router();
 
-router.post(
-  "/:workspaceId",
-  authenticateMiddleware.authenticate,
-  authorizeWorkspaceRole("OWNER, ADMIN"),
-  invitationController.createWorkspaceInvitations,
-);
+router.get("/", invitationController.getInvitationByToken);
 
-router.get("/", authenticateMiddleware.authenticate);
+router.post("/decline", invitationController.declineInvitation);
 
 router.post(
   "/accept",
@@ -20,6 +17,12 @@ router.post(
   invitationController.acceptInvitation,
 );
 
-router.post("/decline", invitationController.declineInvitation);
+router.post(
+  "/:workspaceId",
+  authenticateMiddleware.authenticate,
+  authorizeWorkspaceRole("OWNER", "ADMIN"),
+  updateValidate(createWorkspaceInvitationSchema),
+  invitationController.createWorkspaceInvitations,
+);
 
 export default router;

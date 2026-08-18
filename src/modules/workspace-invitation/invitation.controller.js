@@ -1,12 +1,14 @@
 import { success } from "zod";
 import invitationService from "./invitation.service.js";
 
+//untested
 const createWorkspaceInvitations = async(req, res, next) =>{
   try {
-    const { userId } = req.user.id;
-    const { workspaceId, email } = req.body;
+    const userId  = req.user.id;
+    const { workspaceId } = req.params;
+    const { email } = req.body;
 
-    const invitation = await invitationService.createWorkspaceInvitation(userId, {workspaceId, email});
+    const invitation = await invitationService.createWorkspaceInvitation(userId, workspaceId, {email});
 
     res.status(201).json({
       success : true,
@@ -22,6 +24,13 @@ const getInvitationByToken = async(req, res, next) => {
   try {
 
     const { token } = req.query; // from email service invitelink
+
+    if(!token) {
+      res.status(401).json({
+        success : false,
+        message : "Invitation token is required"
+      });
+    }
 
     const invitation = await invitationService.getInvitationByToken(token);
 
@@ -48,7 +57,7 @@ const acceptInvitation = async(req, res, next) => {
       data: invitation,
     });
 
-  }catch(erorr) {
+  }catch(error) {
     next(error);
   }
 };

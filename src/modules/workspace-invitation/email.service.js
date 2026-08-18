@@ -26,7 +26,7 @@ transport.verify((error, success) => {
 
 export const sendInvitationEmail = async ({to, token, workspaceName}) => {
 
-  const inviteLink = `${process.env.APP_URL}/invitations/accept?token=${token}`;
+  const acceptInvitation = `${process.env.APP_URL}/api/v1/invitations?token=${encodeURIComponent(token)}`;
 
   const info = await transport.sendMail({
     from: process.env.EMAIL_FROM || '"Your app" <no-reply@yourapp.com>',
@@ -34,7 +34,7 @@ export const sendInvitationEmail = async ({to, token, workspaceName}) => {
     subject: `You've been invited to join ${workspaceName}`,
     html: `
     <p>You've been invited to join <strong>${workspaceName}</strong>.</p>
-    <p><a href="${inviteLink}"> Accept Invitations></a></p>
+    <p><a href="${acceptInvitation}"> Accept Invitations></a></p>
     <p>This invitation expires in 24 hours.</p>
     `,
   });
