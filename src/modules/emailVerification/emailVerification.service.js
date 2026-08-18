@@ -47,7 +47,7 @@ const createVerification = async (user) => {
     },
     {
       attempts: 3,
-      Backoff: {
+      backoff: {
         type: "exponential",
         delay: 5000,
       },
