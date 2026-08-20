@@ -45,9 +45,9 @@ const changePassword = async (req, res, next) => {
 
   try{
     const userId = req.user.id;
-    const { oldPass, newPass } = req.body;
+    const { oldPassword, newPassword } = req.body;
 
-    await authService.changePassword(userId, oldPass, newPass);
+    await userService.changePassword(userId, oldPassword, newPassword);
 
     res.status(200).json({
       success: true,

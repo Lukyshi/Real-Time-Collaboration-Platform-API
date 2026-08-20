@@ -5,6 +5,6 @@ export const updatedProfileSchema = z.object({
 });
 
 export const changePasswordSchema = z.object({
-  oldPassword : z.string().min(6, "Old password is too short"),
+  oldPassword: z.string().min(6, "Old password is invalid"),
   newPassword : z.string().min(6, "New password is too short")
 });

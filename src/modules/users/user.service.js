@@ -1,4 +1,5 @@
 import { prisma } from '../../config/prisma.js';
+import { hashedPassword, comparePassword } from '../../utils/password.js';
 
 
 const getMe = async (userId) => {
@@ -35,21 +36,21 @@ const updateProfile = async (userId, data) => {
   });
 };
 
-const changePassword = async (userId, oldPass, newPass) => {
+const changePassword = async (userId, oldPassword, newPassword) => {
   const user = await prisma.user.findUnique({
     where : { id : userId }
   });
-
-  const valid = await comparePassword(oldPass, user.passwordHash);
+  
+  const valid = await comparePassword(oldPassword, user.passwordHash);
 
   if(!valid) throw new Error ('Invalid password');
 
-  const hashed = await hashedPassword(newPass);
+  const newPasswordHashed = await hashedPassword(newPassword);
 
   await prisma.user.update({
     where : { id: userId },
     data : {
-      passwordHash: hashed,
+      passwordHash: newPasswordHashed,
     },
   });
 
