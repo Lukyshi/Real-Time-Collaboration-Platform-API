@@ -11,6 +11,8 @@ import workspaceInvitationRoutes from './modules/workspace-invitation/invitation
 import projectRoutes from './modules/projects/project.route.js';
 import taskRoutes from './modules/tasks/task.route.js';
 import emailVerificationRoutes from './modules/emailVerification/emailVerification.route.js';
+import taskAttachmentRoutes from './modules/attachments/taskAttachment.routes.js';
+import taskCommentRoutes from './modules/comments/comment.routes.js';
 
 import './jobs/invitation.worker.js';
 
@@ -27,6 +29,8 @@ app.use('/api/v1/members', workspaceMemberRoutes);
 app.use('/api/v1/invitations', workspaceInvitationRoutes);
 app.use('/api/v1/', projectRoutes);
 app.use('/api/v1/', taskRoutes);
+app.use('/api/v1/', taskAttachmentRoutes);
+app.use('/api/v1/', taskCommentRoutes);
 
 
 export default app;
