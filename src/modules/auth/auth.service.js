@@ -53,7 +53,7 @@ const login = async ({email, password}) => {
   });
 
   if (!user) {
-    const error = new Error('Invalid credentials');
+    const error = new Error('User does not exist or incorrect email or password');
     error.status = 401
     throw error
   }
@@ -61,7 +61,7 @@ const login = async ({email, password}) => {
   const isValid = await bcrypt.compare(password, user.passwordHash);
 
   if(!isValid) {
-    const error = new Error('Invalid credentials');
+    const error = new Error('Incorrect password');
     error.status = 401
     throw error;
   }

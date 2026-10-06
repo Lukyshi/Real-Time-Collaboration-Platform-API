@@ -1,11 +1,6 @@
 import { prisma } from "../../config/prisma.js";
 import crypto from "node:crypto";
-import { sendVerificationEmail } from "./sendVerificationEmail.transport.js";
 import { invitationQueue } from "../../jobs/invitation.queue.js";
-import { email } from "zod";
-import { Backoffs, delay } from "bullmq";
-import { type } from "node:os";
-
 const VERIFICATION_TOKEN_EXPIRY_MS = 24 * 60 * 60 * 1000;
 
 // hashing token
@@ -36,9 +31,7 @@ const createVerification = async (user) => {
     },
   });
 
-  console.log("📤 Adding verification email job:", user.email);
-
-  const job = await invitationQueue.add(
+  await invitationQueue.add(
     "send-verification-email",
     {
       email: user.email,
@@ -55,7 +48,6 @@ const createVerification = async (user) => {
       removeOnFail: 1000,
     },
   );
-  console.log("✅ Verification job added:", job.id);
 };
 
 const verifyEmail = async (rawToken) => {

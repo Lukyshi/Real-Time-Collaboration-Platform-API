@@ -1,7 +1,6 @@
 import { transport } from "../workspace-invitation/email.service.js";
 
 export const sendVerificationEmail = async ({ to, token, name }) => {
-  console.log("📧 sendVerificationEmail CALLED:", to);
   const verifyLink = `${process.env.APP_URL}/api/v1/verification/verify-email?token=${encodeURIComponent(token)}`;
 
   return transport.sendMail({

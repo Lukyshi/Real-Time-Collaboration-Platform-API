@@ -12,14 +12,6 @@ export const transport = nodemailer.createTransport({
   },
 });
 
-transport.verify((error, success) => {
-  if (error) {
-    console.error("❌ SMTP ERROR:", error);
-  } else {
-    console.log("✅ SMTP SERVER READY");
-  }
-});
-
 // after creating trasport, create a send email 
 // and put it in queue and works
 // after that put that functions in service 
