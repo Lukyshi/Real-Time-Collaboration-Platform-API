@@ -2,11 +2,11 @@ import taskAttachmentService from "./taskAttachment.service.js";
 
 const createAttachment = async(req, res, next) => {
   try {
-    const { workspaceId, projectId, taskId } = req.params;
+    const { taskId } = req.params;
     const uploadedById = req.user.id;
     const file  = req.file;
 
-    const attachment = await taskAttachmentService.createAttachment(workspaceId, projectId, taskId, uploadedById, file);
+    const attachment = await taskAttachmentService.createAttachment(taskId, uploadedById, file);
 
     res.status(201).json({
       success : true,
@@ -20,9 +20,9 @@ const createAttachment = async(req, res, next) => {
 
 const getAttachmentByTask = async(req, res, next) => {
   try {
-    const { workspaceId, projectId, taskId } = req.params;
+    const { taskId } = req.params;
 
-    const attachment = await taskAttachmentService.getAttachmentByTask(workspaceId, projectId, taskId);
+    const attachment = await taskAttachmentService.getAttachmentByTask(taskId);
 
     res.status(200).json({
       success : true,
@@ -36,9 +36,9 @@ const getAttachmentByTask = async(req, res, next) => {
 
 const deleteAttachment = async(req, res, next) => {
   try {
-    const { workspaceId, projectId, taskId, attachmentId } = req.params;
+    const { taskId, attachmentId } = req.params;
 
-    await taskAttachmentService.deleteAttachment(workspaceId, projectId, taskId, attachmentId);
+    await taskAttachmentService.deleteAttachment(taskId, attachmentId);
 
     res.status(200).json({
       success : true,

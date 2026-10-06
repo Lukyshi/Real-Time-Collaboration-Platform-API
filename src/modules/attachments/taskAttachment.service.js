@@ -2,16 +2,19 @@ import { prisma } from "../../config/prisma.js";
 import fs from 'fs/promises';
 import path from "path";
 
-const createAttachment = async(workspaceId, projectId,taskId, uploadedById, file) => {
+const createAttachment = async(taskId, uploadedById, file) => {
 
   const task = await prisma.task.findFirst({
     where : { 
       id : taskId,
-      projectId,
+    },
+    select : {
       project : {
-        workspaceId
-      }
-    }
+        select : {
+          workspaceId : true,
+        },
+      },
+    },
   });
 
   if(!task) throw new Error("Task not found");
@@ -31,15 +34,18 @@ const createAttachment = async(workspaceId, projectId,taskId, uploadedById, file
 
 };
 
-const getAttachmentByTask = async(workspaceId, projectId, taskId) => {
+const getAttachmentByTask = async(taskId) => {
   const task =  await prisma.task.findFirst({
     where : {
       id : taskId,
-      projectId,
+    },
+    select : {
       project : {
-        workspaceId
-      }
-    }
+        select : {
+          workspaceId : true,
+        },
+      },
+    },
   });
 
   if(!task) throw new Error("Task not found");
@@ -51,16 +57,22 @@ const getAttachmentByTask = async(workspaceId, projectId, taskId) => {
 
 };
 
-const deleteAttachment = async(workspaceId, projectId, taskId, attachmentId) => {
+const deleteAttachment = async(taskId, attachmentId) => {
 
   const attachment = await prisma.taskAttachment.findFirst({
     where : { 
       id : attachmentId,
       taskId,
+    },
+    select : {
+      fileUrl : true,
       task : {
-        projectId,
-        project : {
-          workspaceId
+        select : {
+          project : {
+            select : {
+              workspaceId : true,
+            },
+          },
         },
       },
     },

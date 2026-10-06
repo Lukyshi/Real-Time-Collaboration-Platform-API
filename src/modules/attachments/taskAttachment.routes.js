@@ -11,7 +11,7 @@ const router = Router();
 router.use(authenticateMiddleware.authenticate);
 
 router.post(
-  "/workspaces/:workspaceId/projects/:projectId/tasks/:taskId/attachments",
+  "/tasks/:taskId/attachments/",
   authorizeWorkspaceRole("OWNER", "ADMIN", "MEMBER"),
   upload.single("file"),
   validateParams(attachmentFileSchema),
@@ -19,12 +19,12 @@ router.post(
 );
 
 router.get(
-  "/workspaces/:workspaceId/projects/:projectId/tasks/:taskId/attachments",
+  "/tasks/:taskId/attachments/",
   authorizeWorkspaceRole("OWNER", "ADMIN", "MEMBER"),
   taskAttachmentController.getAttachmentByTask
 );
 router.delete(
-  "/workspaces/:workspaceId/projects/:projectId/tasks/:taskId/attachments/:attachmentId",
+  "/tasks/:taskId/attachments/:attachmentId",
   authorizeWorkspaceRole("OWNER", "ADMIN", "MEMBER"),
   taskAttachmentController.deleteAttachment
 );
